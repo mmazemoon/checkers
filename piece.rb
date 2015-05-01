@@ -5,7 +5,7 @@ class Piece
 SLIDING_DIR = { red: [[1,1], [1,-1]], wht: [[-1,1], [-1,-1]] }
 JUMPING_DIR = { red: [[2,2], [2, -2]], wht: [[-2,2], [-2,-2]] }
 
-  attr_reader :color
+  attr_reader :color, :current_position
 
   def initialize(board, position, color, king = false)
     @board = board
@@ -56,15 +56,17 @@ JUMPING_DIR = { red: [[2,2], [2, -2]], wht: [[-2,2], [-2,-2]] }
     false
   end
 
-  # call a valid moves
-  def perform_slide(finish)
-    # slides
-    # if slides, perform slides bang!
+
+  def perform_slide!(finish)
+    @board[@current_position]= nil
+    @current_position = finish
+    @board[@current_position]= self
   end
 
-  def perform_jump(finish)
-    # jumps
-    # if jumps, perform jumps bang!
+  def perform_jump!(finish)
+    enemy_pos = midpoint(finish)
+    @board[enemy_pos] = nil
+    perform_slide!(finish)
   end
 
   def slides
