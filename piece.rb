@@ -1,8 +1,10 @@
-NORMAL_DIR = { red: [[1,1], [1,-1]], wht: [[-1,1], [-1,-1]] }
-KILLING_DIR = { red: [[2,2], [2, -2]], wht: [[-2,2], [-2,-2]] }
 
-require 'byebug'
+
 class Piece
+
+SLIDING_DIR = { red: [[1,1], [1,-1]], wht: [[-1,1], [-1,-1]] }
+JUMPING_DIR = { red: [[2,2], [2, -2]], wht: [[-2,2], [-2,-2]] }
+
   attr_reader :color
 
   def initialize(board, position, color, king = false)
@@ -12,27 +14,36 @@ class Piece
     @king = king
   end
 
-  # call a valid moves
-  def perform_slide(finish)
-    valid_moves
-
-  end
-
-  def perform_jump
-
-  end
-
-  # possible and legal moves
-  def valid_moves
+  def direction(array)
     row = @current_position[0]
     col = @current_position[1]
     result = []
-    dir_arr = direction
-    dir_arr.each.with_index do |direction|
+    array.each do |direction|
       next_move = [row + direction[0], col + direction[1]]
       result << next_move if on_board?(next_move)
     end
     result
+  end
+
+  def jumps
+    jumps_dir = JUMPING_DIR[@color]
+    in_range_jumps = direction(jumps_dir)
+    in_range_jumps.select do |move|
+      so_called_enemy = midpoint(move)
+      if @board[so_called_enemy].nil? || @board[move].is_a?(Piece)
+        false
+      elsif @board[so_called_enemy].color == @color
+        false
+      else
+        true
+      end
+    end
+  end
+
+  def midpoint(move)
+    row = (@current_position[0] + move[0]) / 2
+    column = (@current_position[1] + move[1]) / 2
+    [row, column]
   end
 
   def on_board?(pos)
@@ -45,12 +56,28 @@ class Piece
     false
   end
 
-  def direction
-    possible_moves = NORMAL_DIR[@color] + KILLING_DIR[@color]
-    
+  # call a valid moves
+  def perform_slide(finish)
+    # slides
+    # if slides, perform slides bang!
+  end
+
+  def perform_jump(finish)
+    # jumps
+    # if jumps, perform jumps bang!
+  end
+
+  def slides
+    slide_dir = SLIDING_DIR[@color]
+    in_range_slides = direction(slide_dir)
+    in_range_slides.select do |move|
+      @board[move].nil?
+    end
+  end
+
+  # possible and legal moves
+  def valid_moves
+    final_result = slides + jumps
   end
 
 end
-
-piece = Piece.new(nil, [3, 3], :wht)
-p piece.valid_moves

@@ -9,7 +9,7 @@ class Board
 
   # [] pos_arr
   # @grid[pos[0]][pos[1]] => @board[[2,1]]
-  def [](position)
+  def [](pos)
     @grid[pos[0]][pos[1]]   #
   end
 
@@ -66,4 +66,6 @@ if __FILE__ == $PROGRAM_NAME
   board = Board.new
   board.populate_board
   board.display
+  piece = Piece.new(board, [4, 3], :wht)
+  p piece.valid_moves
 end
